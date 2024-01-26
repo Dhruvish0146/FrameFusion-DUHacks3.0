@@ -16,6 +16,9 @@ const registerUser = async (req,res) => {
     let user = await User.findOne({email:req.body.email});
     if(user)    return res.status(400).send("User alreay registered.");
 
+    let artist = await Artist.findOne({email: req.body.email});
+    if (artist) return res.status(400).send("Artist is registered with same email")
+
     const {
         name,
         email,
@@ -41,9 +44,13 @@ const registerArtist = async (req,res) => {
     const {error} = validateArtist(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 
-    //validating wheater artist is already registered or no
+    //validating whether artist is already registered or no
     let artist = await Artist.findOne({email: req.body.email});
     if (artist) return res.status(400).send("Artist alreay registered.")
+
+    //validating whether some user have this email
+    let user = await User.findOne({email: req.body.email});
+    if(user) return res.status(400).send("User is registered with same email");
 
     //if artist is not already registered
     const {
@@ -116,6 +123,45 @@ const loginUser = async (req, res) =>{
     }
 }
 
+const resetPassword = async (req,res) => {
+    try{
+        const {email , oldPass, newPass} = req.body;
+
+        const user = await User.findOne({email});
+        if(user){
+            const isMatch = await comparePass(oldPass,user.password);
+            if(!isMatch) return res.status(400).json({msg: "Invalid email or password"});
+
+            const salt = await bcrypt.genSalt(10);
+            const passwordHash = await bcrypt.hash(newPass,salt);
+
+            user.password = passwordHash;
+            await user.save();
+
+            return res.status(200).json({ message: 'Password reset for user.' });
+        }
+
+        const artist = await Artist.findOne({email});
+        if(artist){
+            const isMatch = await comparePass(oldPass,artist.password);
+            if(!isMatch) return res.status(400).json({msg: "Invalid email or password"});
+
+            const salt = await bcrypt.genSalt(10);
+            const passwordHash = await bcrypt.hash(newPass,salt);
+
+            artist.password = passwordHash;
+            await artist.save();
+
+            return res.status(200).json({ message: 'Password reset for artist.' });
+        }
+
+        return res.status(404).json({ message: 'Email not found.' });
+    }
+    catch(err){
+        console.log(err);
+    }
+}
+
 function validateLogin(req){
     const schema = Joi.object({
         email: Joi.string().min(5).max(255).required().email(),
@@ -123,10 +169,17 @@ function validateLogin(req){
     })
     return schema.validate(req);
 }
+async function comparePass(pass,encrptedPass){
+    const isMatch = await bcrypt.compare(pass , encrptedPass);
+    console.log(isMatch);
+    return isMatch;
+    
+}
 
 module.exports = {
     registerArtist,
     registerUser,
     loginArtist,
     loginUser,
+    resetPassword,
   };
