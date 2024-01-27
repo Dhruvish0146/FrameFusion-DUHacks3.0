@@ -3,13 +3,12 @@ import Login from './components/login';
 import Home from './components/home';
 import SignUp from './components/signUp';
 import Navbar from './components/navbar';
-import {jwtDecode} from 'jwt-decode';
-import { useSelector } from 'react-redux';
+import Logout from './components/logout';
+
+
 
 function App() {
-  const token = useSelector((state)=>state.token);
-  const user = jwtDecode(token);
-  console.log(user);
+  // const user = useSelector((state)=> state.user._id);
   return (
     <div className="app">
       <Navbar />
@@ -17,6 +16,7 @@ function App() {
         <Route exact path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<SignUp />} />
+        <Route path="/logout" element={<Logout />} />
       </Routes>
     </div>
   );

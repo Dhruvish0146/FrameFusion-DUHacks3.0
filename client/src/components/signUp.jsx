@@ -1,71 +1,135 @@
 import React, { useState } from 'react';
-import axios from 'axios'
+import axios from 'axios';
+import Select from './select';
+import Input from './input';
+import { useNavigate } from 'react-router-dom';
+
 
 const SignUp = () => {
-  const [artistId, setArtistId] = useState('');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [formData, setFormData] = useState({
+    artistId: '',
+    name: '',
+    email: '',
+    password: '',
+    phoneNumber: '',
+  });
+  const navigate = useNavigate();
+  const [actor, setActor] = useState('user');
+  const [errors, setErrors] = useState({});
 
-  const handleSignUp = async (e) => {
+  const handleActorChange = (e) => {
+    const { value } = e.currentTarget;
+    setActor(value);
+  };
+
+  const validate = () => {
+    // Implement validation logic if needed
+    return null;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.currentTarget;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // You can perform the signup logic here, e.g., sending data to a server
-    // console.log('Signing up:', { artistId, name, email, password, phoneNumber });
-    const artistData = { artistId, name, email, password, phoneNumber };
-    // const res = axios.post("http://localhost:5001/api/artist/create", artistData);
-    const response = await fetch("http://localhost:5001/api/artist/create",{
-            method: "POST",
-            body: JSON.stringify({ artistId, name, email, password, phoneNumber }),
-            headers:{
-                "Content-Type" : "application/json"
-            }
-        });
-    console.log(response);
+
+    const validationErrors = validate();
+    setErrors({ ...validationErrors });
+
+    if (validationErrors) return;
+
+    try {
+      let response;
+      if (actor === 'artist') {
+        const { artistId,name, email, password, phoneNumber } = formData;
+        const userFormData = { artistId,name, email, password, phoneNumber };
+        response = await axios.post('http://localhost:5001/api/auth/registerArtist', userFormData);
+      } else {
+        const { name, email, password, phoneNumber } = formData;
+      const userFormData = { name, email, password, phoneNumber };
+      
+      response = await axios.post('http://localhost:5001/api/auth/registerUser', userFormData);
+      }
+
+      // Handle the response as needed (redirect, show success message, etc.)
+      console.log('Registration successful:', response.data);
+      
+      navigate('/login')
+
+      // Optionally, you can navigate to a different page after successful registration
+      // Example: navigate('/login');
+    } catch (error) {
+      // Handle errors from API or network issues
+      console.error('Registration error:', error.message);
+
+      // Optionally, you can update the state to display an error message to the user
+      setErrors({ general: 'Registration failed. Please check your information.' });
+    }
   };
 
   return (
-    <div>
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSignUp}>
-        <label>
-          Artist ID:
-          <input type="text" value={artistId} onChange={(e) => setArtistId(e.target.value)} />
-        </label>
-        <br />
+    <>
+      <div>
+        <h1>Registration Form</h1>
+        <Select
+          label="Register as:"
+          value={actor}
+          onChange={handleActorChange}
+        />
+        <form onSubmit={handleSubmit}>
+          {actor === 'artist' && (
+            <>
+              <Input
+                name="artistId"
+                type="text"
+                label="Artist ID"
+                value={formData.artistId}
+                onChange={handleChange}
+              />
+            </>
+          )}
+          <Input
+            name="name"
+            type="text"
+            label="Name"
+            value={formData.name}
+            onChange={handleChange}
+          />
+          <Input
+            name="email"
+            type="email"
+            label="Email"
+            value={formData.email}
+            onChange={handleChange}
+            error={errors.email}
+          />
+          <Input
+            name="password"
+            type="password"
+            label="Password"
+            value={formData.password}
+            onChange={handleChange}
+            error={errors.password}
+          />
+          <Input
+            name="phoneNumber"
+            type="text"
+            label="Phone Number"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+          />
 
-        <label>
-          Name:
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-        </label>
-        <br />
-
-        <label>
-          Email:
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </label>
-        <br />
-
-        <label>
-          Password:
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        </label>
-        <br />
-
-        <label>
-          Phone Number:
-          <input type="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-        </label>
-        <br />
-
-        <button type="submit" >
-          Sign Up
-        </button>
-      </form>
-      <button type="button" >
-          Sign Up with Google
-        </button>
-    </div>
+          <button className="btn btn-primary" disabled={validate()}>
+            Sign Up
+          </button>
+        </form>
+      </div>
+    </>
   );
 };
 
