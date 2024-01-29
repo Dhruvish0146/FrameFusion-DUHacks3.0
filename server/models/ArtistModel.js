@@ -44,7 +44,7 @@ const ArtistSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  arts: [
+  artIds: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Arts",

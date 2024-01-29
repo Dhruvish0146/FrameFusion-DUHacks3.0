@@ -12,6 +12,7 @@ const Navbar = (props) => {
         </Link>
         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
           <ul className="navbar-nav">
+
             {!user && (
               <>
                 <li className="nav-item">
@@ -26,6 +27,7 @@ const Navbar = (props) => {
                 </li>
               </>
             )}
+
             {user && (
               <>
                 <li className="nav-item">
@@ -40,6 +42,7 @@ const Navbar = (props) => {
                 </li>
               </>
             )}
+            
           </ul>
         </div>
       </div>

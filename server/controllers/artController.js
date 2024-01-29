@@ -54,8 +54,8 @@ const getArt = async (req, res) => {
 const deleteArt = async (req,res) => {
     try {
         const artId = req.params.artId;
-        const art = await Art.findById({_id: artId});
-        if(!art)    return res.status(404).json({message: "Art not found"});
+        // const art = await Art.findById({_id: artId});
+        // if(!art)    return res.status(404).json({message: "Art not found"});
 
         await Artist.updateMany({ arts: artId }, { $pull: { arts: artId } });
         await Art.deleteOne({ _id: artId });

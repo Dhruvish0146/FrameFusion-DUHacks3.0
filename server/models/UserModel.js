@@ -25,14 +25,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  // cart: {
-  //   type: [
-  //     {
-  //       type: mongoose.Schema.Types.ObjectId,
-  //       ref: "Arts",
-  //     },
-  //   ],
-  // },
+  address:{
+    type:"String"
+  },
   isAdmin: {
     type: Boolean,
     default: false,

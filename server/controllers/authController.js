@@ -96,7 +96,21 @@ const loginArtist = async (req, res) =>{
 
         const token = artist.generateAuthToken();
 
-        res.status(200).json({token});
+        
+        const sanitizedArtist = {
+            _id: artist._id,
+            artistId: artist.artistId,
+            name: artist.name,
+            email: artist.email,
+            phoneNumber: artist.phoneNumber,
+            bio: artist.bio,
+            picturePath: artist.picturePath,
+            arts: artist.arts,
+            registeredAt: artist.registeredAt,
+        };
+
+        res.status(200).json({ token, artist: sanitizedArtist });
+
         
     }catch(err){
         console.log(err);
@@ -116,7 +130,15 @@ const loginUser = async (req, res) =>{
 
         const token = user.generateAuthToken();
         
-        res.status(200).json({token});
+        const sanitizedUser = {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            isAdmin: user.isAdmin,
+            orders: user.orders,
+        };
+        res.status(200).json({token,sanitizedUser});
     }
     catch(err){
         console.log(err);

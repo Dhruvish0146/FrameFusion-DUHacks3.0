@@ -65,7 +65,7 @@ const Login = (props) => {
 
         // Assuming your API returns a JSON object with a 'token' property
         const { token } = response.data;
-        localStorage.setItem('token', token);
+        // localStorage.setItem('token', token);
         const user = jwtDecode(token);
 
 

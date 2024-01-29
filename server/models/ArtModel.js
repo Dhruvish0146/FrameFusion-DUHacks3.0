@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const artSchema = mongoose.Schema(
   {
-    name: {
+    title: {
       type: String,
       required: true,
     },
@@ -22,6 +22,10 @@ const artSchema = mongoose.Schema(
     },
     size: {
       type: String,
+    },
+    description:{
+      type:String,
+      default: ""
     },
     isAvailable:{
       type:Boolean,
