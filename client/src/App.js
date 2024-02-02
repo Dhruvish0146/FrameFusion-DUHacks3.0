@@ -4,6 +4,8 @@ import Home from './components/home';
 import SignUp from './components/signUp';
 import Navbar from './components/navbar';
 import Logout from './components/logout';
+import ProfileArtist from './components/profileArtist';
+import AddArt from './components/addArt';
 
 
 
@@ -17,6 +19,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<SignUp />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path='/profile/:userId' element={<ProfileArtist />} />
+        <Route path='/addArt' element={<AddArt />} />
       </Routes>
     </div>
   );

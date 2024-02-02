@@ -5,23 +5,30 @@ const moment = require("moment");
 //create
 const createArt = async (req, res) => {
     try {
-        const { artistId, name, artPath, price, size, category } = req.body;
-        const artist = await Artist.findOne({ artistId });
-        if(!artist) return res.status(404).json({message: "Artist not found"});
+        const { artistId, name, artPath, price, size, category, title } = req.body;
+
+        let artist = await Artist.findById(artistId);
+        if (!artist) return res.status(404).json({ message: "Artist not found" });
+
+        // Ensure that artIds property exists and is an array, or initialize it with an empty array
+        artist = artist || {};
+        artist.artIds = Array.isArray(artist.artIds) ? artist.artIds : [];
 
         const newArt = new Art({
             artistId,
             name,
+            title,
             category,
             price,
             size,
             artPath,
         });
+
         const date = new Date();
         newArt.createdAt = moment(date).format("LL");
         await newArt.save();
-        
-        artist.arts.push(newArt._id);
+
+        artist.artIds.push(newArt._id);
         await artist.save();
 
         res.status(201).json(newArt);
@@ -29,6 +36,8 @@ const createArt = async (req, res) => {
         res.status(409).json({ message: err.message });
     }
 };
+
+
 const getArts = async (req, res) => {
     try {
         const arts = await Art.find();

@@ -9,7 +9,9 @@ import { setLogin } from "../store";
 import { jwtDecode } from "jwt-decode";
 import Select from "./select";
 
+
 const Login = (props) => {
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -50,6 +52,7 @@ const Login = (props) => {
   };
 
   const handleSubmit = async (e) => {
+    const BACKEND_URL="http://localhost:5001";
     e.preventDefault();
 
     const validationErrors = validate();
@@ -61,21 +64,25 @@ const Login = (props) => {
       try {
         // Make API call to the backend using axios
 
-        const response = await axios.post('http://localhost:5001/api/auth/loginArtist', formData);
+        const response = await axios.post(`${BACKEND_URL}/api/auth/loginArtist`, formData);
 
         // Assuming your API returns a JSON object with a 'token' property
-        const { token } = response.data;
+        console.log(response)
+        const { token ,artist } = response.data;
+        
         // localStorage.setItem('token', token);
-        const user = jwtDecode(token);
+        const userId = jwtDecode(token);
 
 
         // Continue with whatever you want to do with the token
         console.log('Authentication successful. Token:', token);
+        // console.log(artist);
         if (token) {
           dispatch(
             setLogin({
-              user: user,
+              userId: userId,
               token: token,
+              name: artist.name
             })
           );
           navigate("/");
@@ -93,7 +100,7 @@ const Login = (props) => {
       try {
         // Make API call to the backend using axios
 
-        const response = await axios.post('http://localhost:5001/api/auth/loginUser', formData);
+        const response = await axios.post(`${BACKEND_URL}/api/auth/loginUser`, formData);
 
         // Assuming your API returns a JSON object with a 'token' property
         const { token } = response.data;

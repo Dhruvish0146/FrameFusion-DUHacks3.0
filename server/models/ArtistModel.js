@@ -42,7 +42,7 @@ const ArtistSchema = new mongoose.Schema({
   },
   picturePath: {
     type: String,
-    default: "",
+    default: "https://i2.wp.com/www.winhelponline.com/blog/wp-content/uploads/2017/12/user.png?fit=256%2C256&quality=100&ssl=1",
   },
   artIds: [
     {

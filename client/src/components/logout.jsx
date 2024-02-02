@@ -12,7 +12,7 @@ const Logout = (props) => {
     useEffect(() => {
         dispatch(
             setLogout({
-                user: null,
+                userId: null,
                 token: null,
             })
         );

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const SignUp = () => {
+  const BACKEND_URL="http://localhost:5001";
   const [formData, setFormData] = useState({
     artistId: '',
     name: '',
@@ -48,12 +49,12 @@ const SignUp = () => {
       if (actor === 'artist') {
         const { artistId,name, email, password, phoneNumber } = formData;
         const userFormData = { artistId,name, email, password, phoneNumber };
-        response = await axios.post('http://localhost:5001/api/auth/registerArtist', userFormData);
+        response = await axios.post(`${BACKEND_URL}/api/auth/registerArtist`, userFormData);
       } else {
         const { name, email, password, phoneNumber } = formData;
       const userFormData = { name, email, password, phoneNumber };
       
-      response = await axios.post('http://localhost:5001/api/auth/registerUser', userFormData);
+      response = await axios.post(`${process.env.BACKEND_URL}/api/auth/registerUser`, userFormData);
       }
 
       // Handle the response as needed (redirect, show success message, etc.)
