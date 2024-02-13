@@ -1,21 +1,24 @@
 // Input.jsx
-import React from 'react';
-
-const Input = ({ name, label, value, onChange , error,type}) => {
+const Input = ({ name, label, value, onChange, error, type, placeholder }) => {
     return (
-        <div className="form-group">
-            <label htmlFor={name}>{label}</label>
-            <input
-                id={name}
-                value={value}
-                onChange={onChange}
-                name={name}
-                type={type}
-                className="form-control"
-            />
-            {error && <div className="alert alert-danger">{error}</div>}
-        </div>
+      <div className="flex flex-col md-6">
+        <label htmlFor={name} className="mb-1 text-sm text-gray-700">
+          {label}
+        </label>
+        <input
+          id={name}
+          value={value}
+          onChange={onChange}
+          name={name}
+          type={type}
+          autoComplete="off"
+          placeholder={placeholder}
+          className="px-3 py-2 border rounded-md text-sm focus:outline-none focus:border-blue-500"
+        />
+        {error && <div className="text-red-500 text-sm mt-1">{error}</div>}
+      </div>
     );
-};
-
-export default Input;
+  };
+  
+  export default Input;
+  

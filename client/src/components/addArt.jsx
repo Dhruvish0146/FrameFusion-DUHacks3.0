@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Input from "./input";
+// Assuming Input component is defined
 
 const AddArt = () => {
-    const [objectUrl, setObjectUrl] = useState('');
     const [file, setFile] = useState(null);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: "",
         category: "",
@@ -13,7 +16,7 @@ const AddArt = () => {
         size: "",
         artPath: null, // Change to null for file input
     });
-    const { _id: artistId } = useSelector(state => state.userId);
+    const userId = useSelector(state => state.userId);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -57,9 +60,6 @@ const AddArt = () => {
     
             console.log('Image uploaded successfully:', uploadResponse);
     
-            // Update objectUrl after successful image upload
-            setObjectUrl(responseData.objectUrl);
-    
             // Now, construct the data object with the updated objectUrl
             const data = {
                 name: formData.name,
@@ -68,104 +68,97 @@ const AddArt = () => {
                 price: formData.price,
                 size: formData.size,
                 artPath: responseData.objectUrl, // Use responseData.objectUrl directly
-                artistId: artistId,
+                artistId: userId,
             };
             console.log(data);
     
             try {
                 const response = await axios.post("http://localhost:5001/artist/addArt", data);
                 console.log("Art added:", response.data);
+                navigate("/");
             } catch (error) {
                 console.error("Error creating art:", error);
             }
         } catch (error) {
             console.error('Error parsing server response:', error);
         }
+        
     };
     
 
-        return (
-            <div className="container mt-5">
-                <h2>Add New Art</h2>
-                <form onSubmit={handleSubmit}>
-                    {/* ... Other form fields ... */}
+    return (
+        <div className="flex justify-center items-center h-screen bg-gradient-to-br from-purple-600 to-cyan-400">
+            <div className="relative bottom-[40px] max-w-md w-full mx-auto p-8 bg-white rounded-lg shadow-lg">
+                <h2 className="text-3xl font-semibold text-gray-900 text-center mb-8">Add New Art</h2>
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                    <Input
+                        name="name"
+                        type="text"
+                        label="Name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                    />
+                    <Input
+                        name="title"
+                        type="text"
+                        label="Title"
+                        value={formData.title}
+                        onChange={handleChange}
+                        required
+                    />
+                    <Input
+                        name="category"
+                        type="text"
+                        label="Category"
+                        value={formData.category}
+                        onChange={handleChange}
+                        required
+                    />
+                    <Input
+                        name="price"
+                        type="text"
+                        label="Price"
+                        value={formData.price}
+                        onChange={handleChange}
+                        required
+                    />
+                    <Input
+                        name="size"
+                        type="text"
+                        label="Size"
+                        value={formData.size}
+                        onChange={handleChange}
+                        required
+                    />
                     <div className="form-group">
-                        <label>Name:</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
+                        <label htmlFor="artPath" className="block text-sm font-medium text-gray-700">
+                            Art Path (File Location)
+                        </label>
+                        <div className="mt-1">
+                            <input
+                                id="artPath"
+                                name="artPath"
+                                type="file"
+                                accept="image/*"
+                                required
+                                onChange={handleFileChange}
+                                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                        </div>
                     </div>
-
-                    <div className="form-group">
-                        <label>Title:</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="title"
-                            value={formData.title}
-                            onChange={handleChange}
-                            required
-                        />
+                    <div>
+                        <button
+                            type="submit"
+                            className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Add Art
+                        </button>
                     </div>
-
-                    <div className="form-group">
-                        <label>Category:</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="category"
-                            value={formData.category}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Price:</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="price"
-                            value={formData.price}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Size:</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            name="size"
-                            value={formData.size}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Art Path (File Location):</label>
-                        <input
-                            type="file"
-                            className="form-control"
-                            name="artPath"
-                            onChange={handleFileChange}
-                            required
-                        />
-                    </div>
-
-                    <button type="submit" className="btn btn-primary">
-                        Add Art
-                    </button>
                 </form>
             </div>
-        );
-    };
+        </div>
+    );
+};
 
-    export default AddArt;
+export default AddArt;

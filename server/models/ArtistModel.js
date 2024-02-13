@@ -52,7 +52,7 @@ const ArtistSchema = new mongoose.Schema({
   ],
 });
 ArtistSchema.methods.generateAuthToken = function(){
-  const tokken = jwt.sign({_id: this._id},process.env.JWT_SECERT);
+  const tokken = jwt.sign({_id: this._id,actor:"artist"},process.env.JWT_SECERT);
   return tokken;
 }
 

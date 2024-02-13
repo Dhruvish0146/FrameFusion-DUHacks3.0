@@ -14,6 +14,7 @@ const s3Client = new S3Client({
 });
 
 const putObject = async function (filename, ContentType)  {
+    
     const command = new PutObjectCommand({
         Bucket: "framefusion-art",
         Key: `/uploads/user-uploads/${filename}`,
@@ -28,10 +29,5 @@ const putObject = async function (filename, ContentType)  {
 };
 
 module.exports = {
-    initialize: async () => {
-        const filename = `image-${Date.now()}.jpeg`;
-        const contentType = "image/png";
-        console.log('URL for uploading', await putObject(filename, contentType));
-    },
     putObject: putObject,
 };

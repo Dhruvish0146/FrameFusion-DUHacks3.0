@@ -25,26 +25,26 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true,
   },
-  address:{
-    type:"String"
+  address: {
+    type: String,
   },
   isAdmin: {
     type: Boolean,
     default: false,
   },
-  orders:{
+  orders: {
     type: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Arts",
       },
     ],
-  }
+  },
 });
-userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECERT);
-  return token;
-};
+// userSchema.methods.generateAuthToken = async function () {
+//   const token = jwt.sign({ _id: this._id ,actor:false}, process.env.JWT_SECERT);
+//   return token;
+// };
 
 function validateUser(user) {
   const schema = Joi.object({

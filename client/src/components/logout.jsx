@@ -13,7 +13,11 @@ const Logout = (props) => {
         dispatch(
             setLogout({
                 userId: null,
-                token: null,
+            token: null,
+            name: null,
+            actor: null,
+            priturePath :null,
+            user:null,
             })
         );
         navigate("/");

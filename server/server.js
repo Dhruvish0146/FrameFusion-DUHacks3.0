@@ -1,17 +1,13 @@
 const express = require('express')
 require("dotenv").config();
-// const cors = require('cors')
+const cors = require('cors');
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const app = express()
 // const cookieParser = require("cookie-parser");
-let path = require('path');
-
-const { initialize, putObject } = require('./s3');
-const cors=require('cors')
-// app.use(cors({ origin: 'http://localhost:3000' }));
+const path = require('path');
+const { putObject } = require('./s3');
 app.use(cors());
-initialize();
 
 const artistRoutes = require("./routes/artistRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -43,7 +39,9 @@ app.use("/art",artRoutes)
 
 app.post('/api/upload', async (req, res) => {
   try {
-      const { filename, contentType } = req.body;
+      let { filename, contentType } = req.body;
+      const currentDateTime = new Date().toISOString().replace(/[:.]/g, '-');
+      filename = currentDateTime+"-"+filename;
       const url = await putObject(filename, contentType);
       const objectUrl = `https://framefusion-art.s3.ap-south-1.amazonaws.com//uploads/user-uploads/${encodeURIComponent(filename)}`;
 
@@ -64,3 +62,5 @@ const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server is starting at PORT ${PORT}`);
   });
+
+

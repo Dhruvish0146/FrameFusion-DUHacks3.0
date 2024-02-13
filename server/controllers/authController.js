@@ -96,7 +96,6 @@ const loginArtist = async (req, res) =>{
 
         const token = artist.generateAuthToken();
 
-        
         const sanitizedArtist = {
             _id: artist._id,
             artistId: artist.artistId,
@@ -105,11 +104,12 @@ const loginArtist = async (req, res) =>{
             phoneNumber: artist.phoneNumber,
             bio: artist.bio,
             picturePath: artist.picturePath,
-            arts: artist.arts,
+            arts: artist.artIds,
             registeredAt: artist.registeredAt,
         };
+        // console.log(artist)
 
-        res.status(200).json({ token, artist: sanitizedArtist });
+        res.status(200).json({ token, user: sanitizedArtist });
 
         
     }catch(err){
@@ -117,19 +117,26 @@ const loginArtist = async (req, res) =>{
     }
 }
 
-const loginUser = async (req, res) =>{
-    try{
-        const {error} = validateLogin(req.body);
-        if(error) return res.status(400).send(error.details[0].message);
+const loginUser = async (req, res) => {
+    try {
+        const { error } = validateLogin(req.body);
+        if (error) return res.status(400).send(error.details[0].message);
 
-        const user = await User.findOne({email: req.body.email });
-        if(!user)   return res.status(400).json({msg: "Invalid email or password"});
+        const user = await User.findOne({ email: req.body.email });
+        if (!user) return res.status(400).json({ msg: "Invalid email or password" });
 
         const isMatch = await bcrypt.compare(req.body.password, user.password);
-        if(!isMatch) return res.status(400).json({msg: "Invalid email or password"});
+        if (!isMatch) return res.status(400).json({ msg: "Invalid email or password" });
 
-        const token = user.generateAuthToken();
-        
+        let token;
+        if (user.isAdmin === false) {
+            token = jwt.sign({ _id: user._id, actor: false }, process.env.JWT_SECERT);
+        } else if (user.isAdmin === true) {
+            token = jwt.sign({ _id: user._id, actor: true }, process.env.JWT_SECERT);
+        } else {
+            return res.status(400).json({ msg: "Invalid user role" }); // Handle unknown user roles
+        }
+
         const sanitizedUser = {
             _id: user._id,
             name: user.name,
@@ -137,25 +144,29 @@ const loginUser = async (req, res) =>{
             phoneNumber: user.phoneNumber,
             isAdmin: user.isAdmin,
             orders: user.orders,
+            address: user.address
         };
-        res.status(200).json({token,sanitizedUser});
-    }
-    catch(err){
+
+        res.status(200).json({ token, user:sanitizedUser });
+        
+    } catch (err) {
         console.log(err);
+        res.status(500).json({ msg: "Server Error" }); // Handle server errors
     }
 }
 
+
 const resetPassword = async (req,res) => {
     try{
-        const {email , oldPass, newPass} = req.body;
-
-        const user = await User.findOne({email});
+        const {_id , currentPassword, newPassword} = req.body;
+        // console.log(_id);
+        const user = await User.findById(_id);
         if(user){
-            const isMatch = await comparePass(oldPass,user.password);
-            if(!isMatch) return res.status(400).json({msg: "Invalid email or password"});
+            const isMatch = await comparePass(currentPassword,user.password);
+            if(!isMatch) return res.status(400).json({msg: "Invalid password"});
 
             const salt = await bcrypt.genSalt(10);
-            const passwordHash = await bcrypt.hash(newPass,salt);
+            const passwordHash = await bcrypt.hash(newPassword,salt);
 
             user.password = passwordHash;
             await user.save();
@@ -163,13 +174,13 @@ const resetPassword = async (req,res) => {
             return res.status(200).json({ message: 'Password reset for user.' });
         }
 
-        const artist = await Artist.findOne({email});
+        const artist = await Artist.findById(_id);
         if(artist){
-            const isMatch = await comparePass(oldPass,artist.password);
+            const isMatch = await comparePass(currentPassword,artist.password);
             if(!isMatch) return res.status(400).json({msg: "Invalid email or password"});
 
             const salt = await bcrypt.genSalt(10);
-            const passwordHash = await bcrypt.hash(newPass,salt);
+            const passwordHash = await bcrypt.hash(newPassword,salt);
 
             artist.password = passwordHash;
             await artist.save();
@@ -177,7 +188,7 @@ const resetPassword = async (req,res) => {
             return res.status(200).json({ message: 'Password reset for artist.' });
         }
 
-        return res.status(404).json({ message: 'Email not found.' });
+        return res.status(404).json({ message: ' not found.' });
     }
     catch(err){
         console.log(err);

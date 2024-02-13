@@ -9,7 +9,7 @@ const getArtistDetails = async (req, res) => {
     if (!artist) {
       return res.status(404).json({ message: "Artist not found" });
     }
-
+    
     res.status(200).json(artist);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -19,18 +19,20 @@ const getArtistDetails = async (req, res) => {
 
 const updateArtist = async (req,res) => {
     try {
-        const {artistId , email, phoneNumber, bio } = req.body;
+        const {artistId , email, phoneNumber, bio , picturePath ,name} = req.body;
 
-        const artist = await Artist.findOne({artistId});
+        const artist = await Artist.findById(artistId).select('-password');
         if(!artist) return res.status(404).json({message: "Artist not found"});
 
         if(email) artist.email = email;
         if(phoneNumber) artist.phoneNumber= phoneNumber;
         if(bio) artist.bio = bio;
+        if(name) artist.name = name;
+        if(picturePath) artist.picturePath=picturePath;
 
         await artist.save();
 
-        res.status(200).json({message: "Artist updated successfully"});
+        res.status(200).json({artist,message: "Artist updated successfully"});
     }
     catch (err) {
         res.status(500).json({ message: err.message });
