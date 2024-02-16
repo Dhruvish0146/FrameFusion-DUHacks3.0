@@ -50,7 +50,7 @@ const getArts = async (req, res) => {
 const getArt = async (req, res) => {
     try {
         const artId = req.params.artId;
-        console.log(artId)
+        // console.log(artId)
         const art = await Art.findById({_id: artId});
         if(!art)    return res.status(404).json({message:"Art not found"});
 

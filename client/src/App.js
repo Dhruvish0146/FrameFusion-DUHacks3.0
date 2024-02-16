@@ -8,8 +8,10 @@ import ProfileArtist from './components/profileArtist';
 import AddArt from './components/addArt';
 import EditProfile from './components/editProfile';
 import Footer from './components/footer';
-import ArtPage from './components/artPage';
+
 import ProfileUser from './components/ProfileUser/profileUser';
+import ArtPage from './components/ArtPage/artPage';
+import CheckoutPage from './components/Checkout/checkout';
 
 
 function App() {
@@ -26,6 +28,7 @@ function App() {
           <Route path='/profile/artist/:userId' element={<ProfileArtist />} />
           <Route path='/profile/user/:userId' element={<ProfileUser />} />
           <Route path='/art/:artId' element={<ArtPage />} />
+          <Route path='/checkout/:artId' element={<CheckoutPage />} />
           <Route path='/addArt' element={<AddArt />} />
           <Route path='/editProfile' element={<EditProfile />} />
         </Routes>

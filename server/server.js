@@ -13,6 +13,7 @@ const artistRoutes = require("./routes/artistRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const artRoutes = require("./routes/artRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 if(!process.env.JWT_SECERT){
   console.log("FATAL ERROR: JWT_SECERT is not defined.");
@@ -36,6 +37,7 @@ app.use("/user",userRoutes)
 app.use("/artist", artistRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/art",artRoutes)
+app.use("/order",orderRoutes);
 
 app.post('/api/upload', async (req, res) => {
   try {

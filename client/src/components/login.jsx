@@ -5,7 +5,7 @@ import Input from "./input";
 import axios from "axios"
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setLogin, setPicturePath } from "../store";
+import { setArts, setLogin, setPicturePath } from "../store";
 import { jwtDecode } from "jwt-decode";
 import Select from "./select";
 
@@ -48,12 +48,14 @@ const Login = () => {
 
     const BACKEND_URL = "http://localhost:5001";
     try {
+
+      
       const response = await axios.post(`${BACKEND_URL}/api/auth/${select === 'artist' ? 'loginArtist' : 'loginUser'}`, formData);
       const { token, user } = response.data;
       console.log(response.data)
       const { _id, actor } = jwtDecode(token);
       // console.log(444444, user)
-
+      
       dispatch(
         setLogin({
           userId: _id,
@@ -62,7 +64,12 @@ const Login = () => {
           actor: actor,
           user: user,
         })
-      );
+        );
+
+        const responseArts = await fetch("http://localhost:5001/art/getArts"); // Replace with your API endpoint
+        const arts = await responseArts.json();
+        dispatch(setArts({arts}));
+
       if (actor === "artist") {
         dispatch(
           setPicturePath({

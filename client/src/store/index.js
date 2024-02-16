@@ -7,6 +7,7 @@ const initialState = {
   picturePath: null,
   actor: null,
   user: null,
+  arts:null,
 };
 
 export const authSlice = createSlice({
@@ -28,6 +29,8 @@ export const authSlice = createSlice({
       state.actor = null;
       state.picturePath = null;
       state.user = null;
+      state.arts = null;
+
     },
     setPicturePath: (state, action) => {
       state.picturePath = action.payload.picturePath;
@@ -40,9 +43,13 @@ export const authSlice = createSlice({
         state.name = state.user.name;
         state.picturePath = state.user.picturePath;
     },
+    setArts:(state,action) =>{
+      state.arts = action.payload.arts;
+
+    }
   },
 });
 
-export const { setLogin, setLogout, setPicturePath, updateDetails } =
+export const { setLogin, setLogout, setPicturePath, updateDetails ,setArts} =
   authSlice.actions;
 export default authSlice.reducer;
