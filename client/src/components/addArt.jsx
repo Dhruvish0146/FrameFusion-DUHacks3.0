@@ -2,108 +2,119 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Input from "./input";
-// Assuming Input component is defined
 
 const AddArt = () => {
-    const [file, setFile] = useState(null);
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        name: "",
-        category: "",
-        title: "",
-        price: "",
-        size: "",
-        artPath: null, // Change to null for file input
+  const [file, setFile] = useState(null);
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    description: "",
+    category: "",
+    title: "",
+    price: "",
+    size: "",
+    artPath: null, // Change to null for file input
+  });
+  const userId = useSelector((state) => state.userId);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!file) {
+      alert("Please select an image file.");
+      return;
+    }
+
+    setLoading(true);
+
+    const response = await fetch("http://localhost:5001/api/upload", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type,
+      }),
     });
-    const userId = useSelector(state => state.userId);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
-    };
+    try {
+      const responseData = await response.json();
+      console.log("Server Response:", responseData);
 
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
-    };
+      const uploadResponse = await fetch(responseData.url, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-    
-        if (!file) {
-            alert('Please select an image file.');
-            return;
-        }
-    
-        const response = await fetch('http://localhost:5001/api/upload', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                filename: file.name,
-                contentType: file.type,
-            }),
-        });
-    
-        try {
-            const responseData = await response.json();
-            console.log('Server Response:', responseData);
-    
-            const uploadResponse = await fetch(responseData.url, {
-                method: 'PUT',
-                body: file,
-                headers: {
-                    'Content-Type': file.type,
-                },
-            });
-    
-            console.log('Image uploaded successfully:', uploadResponse);
-    
-            // Now, construct the data object with the updated objectUrl
-            const data = {
-                name: formData.name,
-                category: formData.category,
-                title: formData.title,
-                price: formData.price,
-                size: formData.size,
-                artPath: responseData.objectUrl, // Use responseData.objectUrl directly
-                artistId: userId,
-            };
-            console.log(data);
-    
-            try {
-                const response = await axios.post("http://localhost:5001/artist/addArt", data);
-                console.log("Art added:", response.data);
-                navigate("/");
-            } catch (error) {
-                console.error("Error creating art:", error);
-            }
-        } catch (error) {
-            console.error('Error parsing server response:', error);
-        }
-        
-    };
+      console.log("Image uploaded successfully:", uploadResponse);
+
+      // Now, construct the data object with the updated objectUrl
+      const data = {
+        description: formData.description,
+        category: formData.category,
+        title: formData.title,
+        price: formData.price,
+        size: formData.size,
+        artPath: responseData.objectUrl, // Use responseData.objectUrl directly
+        artistId: userId,
+      };
+      console.log(data);
+
+      try {
+        const response = await axios.post(
+          "http://localhost:5001/artist/addArt",
+          data
+        );
+        console.log("Art added:", response.data);
+        navigate("/");
+        toast.success("Art added successfully");
+      } catch (error) {
+        console.error("Error creating art:", error);
+        toast.error("Error creating art. Please try again later");
+      }
+    } catch (error) {
+      console.error("Error parsing server response:", error);
+      toast.error("Error uploading art. Please try again later");
+    } finally {
+      setLoading(false);
+    }
+  };
     
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gradient-to-br from-purple-600 to-cyan-400">
-            <div className="relative bottom-[40px] max-w-md w-full mx-auto p-8 bg-white rounded-lg shadow-lg">
+        <div className=" flex justify-center items-center p-10  bg-gradient-to-br from-purple-600 to-cyan-400">
+            <div className="relative bottom-[40px] max-w-md w-full m-8 p-8 bg-white rounded-lg shadow-lg">
                 <h2 className="text-3xl font-semibold text-gray-900 text-center mb-8">Add New Art</h2>
                 <form className="space-y-6" onSubmit={handleSubmit}>
-                    <Input
-                        name="name"
-                        type="text"
-                        label="Name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                    />
                     <Input
                         name="title"
                         type="text"
                         label="Title"
                         value={formData.title}
+                        onChange={handleChange}
+                        required
+                    />
+                    <Input
+                        name="description"
+                        type="text"
+                        label="Description"
+                        value={formData.description}
                         onChange={handleChange}
                         required
                     />
@@ -151,12 +162,14 @@ const AddArt = () => {
                         <button
                             type="submit"
                             className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            disabled={loading}
                         >
-                            Add Art
+                            {loading ? "Adding Art..." : "Add Art"}
                         </button>
                     </div>
                 </form>
             </div>
+            <ToastContainer />
         </div>
     );
 };

@@ -12,6 +12,8 @@ import Footer from './components/footer';
 import ProfileUser from './components/ProfileUser/profileUser';
 import ArtPage from './components/ArtPage/artPage';
 import CheckoutPage from './components/Checkout/checkout';
+import Orders from './components/OrdersPage/order';
+import EditProfileArtist from './components/ProfileArtist/profileArtist';
 
 
 function App() {
@@ -30,10 +32,11 @@ function App() {
           <Route path='/art/:artId' element={<ArtPage />} />
           <Route path='/checkout/:artId' element={<CheckoutPage />} />
           <Route path='/addArt' element={<AddArt />} />
-          <Route path='/editProfile' element={<EditProfile />} />
+          <Route path='/orders' element={<Orders />} />
+          <Route path='/editProfile' element={<EditProfileArtist />} />
         </Routes>
       </div>
-      <Footer/>
+      {/* <Footer/> */}
     </>
   );
 }

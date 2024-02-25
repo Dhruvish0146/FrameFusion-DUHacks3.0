@@ -5,7 +5,7 @@ const moment = require("moment");
 //create
 const createArt = async (req, res) => {
     try {
-        const { artistId, name, artPath, price, size, category, title } = req.body;
+        const { artistId, description, artPath, price, size, category, title } = req.body;
 
         let artist = await Artist.findById(artistId);
         if (!artist) return res.status(404).json({ message: "Artist not found" });
@@ -16,7 +16,7 @@ const createArt = async (req, res) => {
 
         const newArt = new Art({
             artistId,
-            name,
+            description,
             title,
             category,
             price,

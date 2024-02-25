@@ -1,10 +1,13 @@
 const express = require('express');
 const { getArts , getArt, deleteArt} = require('../controllers/artController');
+
 const router = express.Router();
 
 router.get("/getArts",getArts);
 router.get("/:artId",getArt)
 router.delete("/:artId",deleteArt);
+
+
 
 module.exports = router;
 

@@ -1,5 +1,10 @@
 const Razorpay= require("razorpay");
 const crypto = require("crypto");
+const Art = require("../models/ArtModel");
+
+const { User } = require("../models/UserModel");
+
+
 require("dotenv").config();
 
 const createOrder = async (req,res) =>{
@@ -43,6 +48,10 @@ const validateOrder = async (req,res) =>{
         
     }
 
+    const {art} = req.body;
+
+
+
     res.json({
         msg: "success",
         orderId: razorpay_order_id,
@@ -51,7 +60,25 @@ const validateOrder = async (req,res) =>{
 }
 
 
+const updateArtworkAndUser = async (req, res) => {
+    try {
+        const { art, userId } = req.body;
+
+        const updatedArtwork = await Art.findByIdAndUpdate(art._id, { isAvailable: false }, { new: true });
+
+        const updatedUser = await User.findByIdAndUpdate(userId, { $push: { orders: updatedArtwork } }, { new: true });
+
+        res.json({ updatedArtwork, updatedUser });
+    } catch (error) {
+        console.error("Error updating artwork and user:", error);
+        res.status(500).json({ msg: "Internal Server Error" });
+    }
+};
+
+
+
 module.exports = {
     createOrder,
     validateOrder,
+    updateArtworkAndUser
 };

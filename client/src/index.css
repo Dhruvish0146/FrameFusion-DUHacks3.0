@@ -2,3 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Define the Masonry grid */
+.masonry-grid {
+    display: flex;
+    margin-left: -15px; /* Adjust based on your layout */
+}
+
+/* Define the Masonry columns */
+.masonry-column {
+    padding-left: 15px; /* Adjust based on your layout */
+}
+
+/* Define the Masonry items */
+.masonry-item {
+    margin-bottom: 15px; /* Adjust based on your layout */
+    width: 100%; /* Ensure items take up full width */
+    box-sizing: border-box; /* Ensure padding and border are included in the width */
+}

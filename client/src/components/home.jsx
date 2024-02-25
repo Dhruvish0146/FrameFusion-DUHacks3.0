@@ -1,40 +1,90 @@
-import React from "react";
-import {  useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import img1 from "./assets/img.jpg"
+import img2 from "./assets/img2.jpg"
+import img3 from "./assets/img3.jpg"
+import img4 from "./assets/img4.jpg"
+import img5 from "./assets/img5.jpg"
+import img6 from "./assets/img6.jpg"
+import ArtCard from "./ArtCart";
+import Fuse from 'fuse.js'
+// import axios from "axios";
 
 const Home = () => {
-
+  // const [artists, setArtists] = useState([]);
   const name = useSelector((state) => state.name);
-  // const [arts, setArts] = useState([]);
-  const arts = useSelector(state => state.arts);
+  const [arts, setArts] = useState([]);
+  // const arts = useSelector(state => state.arts);
+  const img = [img1, img2, img3, img4, img5, img6];
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [filteredArts, setFilteredArts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const fuse = new Fuse(arts, {
+    keys: ["title",],
+    threshold: 0.3,
+  })
+
+  useEffect(() => {
+    // Fetch arts from the server
+    const fetchArts = async () => {
+      try {
+        const response = await fetch("http://localhost:5001/art/getArts"); // Replace with your API endpoint
+        const data = await response.json();
+        setArts(data);
+        setFilteredArts(data);
+      } catch (error) {
+        console.error("Error fetching arts:", error);
+      }
+    };
+
+    fetchArts();
+  }, []);
 
   // useEffect(() => {
-  //   // Fetch arts from the server
-  //   const fetchArts = async () => {
+  //   const fetchArtists = async () => {
   //     try {
-  //        {
-  //         const response = await fetch("http://localhost:5001/art/getArts"); // Replace with your API endpoint
-  //         const data = await response.json();
-  //         setArts(data);
-
-  //       }
-
+  //       const response = await axios.get('http://localhost:5001/artist/getAllArtist'); // Replace 'your_api_endpoint_here' with your actual endpoint
+  //       setArtists(response.data);
   //     } catch (error) {
-  //       console.error("Error fetching arts:", error);
+  //       console.error('Error fetching artists:', error);
   //     }
   //   };
 
-  //   fetchArts();
+  //   fetchArtists();
   // }, []);
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentImageIndex((prevIndex) =>
+        (prevIndex + 1) % img.length
+      );
+    }, 3000); // Change the background image every 5 seconds
+    setFilteredArts(arts);
+    return () => clearInterval(intervalId);
+  }, [arts, img.length]);
+
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
+
+    if (query.length > 0) {
+      const results = fuse.search(query);
+      setFilteredArts(results.map((r) => r.item));
+    } else {
+      setFilteredArts(arts);
+    }
+  };
   return (
     <>
+      <div style={{
+        background: `linear-gradient(to bottom right, #030637, #3C0753, #720455, #910A67)`,
+      }}></div>
       <div className="relative rounded-xl p-10 mb-[200px]">
         <div className="absolute inset-0 z-0 h-[500px] overflow-hidden bg-black">
           <img
             className="absolute object-cover w-full h-full opacity-50 bottom-0"
-            src="https://images.unsplash.com/photo-1553949345-eb786bb3f7ba?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src={img[currentImageIndex]}
             alt="A beautiful landscape"
           />
         </div>
@@ -55,41 +105,38 @@ const Home = () => {
             <form className="mb-4 flex items-center justify-center">
               <input
                 type="text"
-                className="form-input w-2/3 rounded-l-lg px-4 py-3"
-                placeholder="Try search 'Artist Name'"
+                className="form-input w-2/3 rounded-lg px-4 py-3 text-black"
+                placeholder="Try search 'Art Name'"
+                onChange={handleSearch}
+                value={searchQuery}
               />
-              <button className="ml-4 rounded-r-lg bg-gradient-to-r from-yellow-500 to-yellow-600 px-6 py-3 font-bold text-white transition duration-300 ease-in-out hover:from-yellow-600 hover:to-yellow-700">
-                Search
-              </button>
+            
             </form>
           </div>
         </div>
       </div>
+      <div className="container mx-auto px-4 mt-8">
 
-      <div className="container mx-auto mt-8">
-        {!name && <h1 className="text-3xl mb-4">Welcome, Anonymous!</h1>}
-        {name && <h1 className="text-3xl mb-4">Hello, {name}!</h1>}
 
-        <h2 className="text-2xl mb-8">Art Gallery</h2>
-
-        {/* Masonry grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {arts.map((art) => (
-            <Link
-              to={`/art/${art._id}`}
-              key={art._id}
-              className="relative overflow-hidden bg-gray-200 rounded-lg shadow-md"
-            >
-              <img
-                src={art.artPath}
-                alt={art.title}
-                className="w-full h-auto object-cover"
-              />
-              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75 opacity-0 transition duration-300 ease-in-out hover:opacity-100">
-                <p className="text-white text-center">{art.title}</p>
+
+          {filteredArts
+            .slice()
+            .sort((a, b) =>
+              a.isAvailable === b.isAvailable ? 0 : a.isAvailable ? -1 : 1
+            )
+            .map((art) => (
+              <div key={art._id} className="hover:scale-105">
+                <ArtCard
+                  price={art.price}
+                  title={art.title}
+                  artistId={art.artistId}
+                  imageUrl={art.artPath}
+                  isAvailable={art.isAvailable}
+                  _id={art._id}
+                />
               </div>
-            </Link>
-          ))}
+            ))}
         </div>
       </div>
     </>

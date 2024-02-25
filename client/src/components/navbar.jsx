@@ -1,6 +1,8 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
+import Name from './Name';
+
 
 const Navbar = () => {
   const userId = useSelector(state => state.userId);
@@ -17,8 +19,8 @@ const Navbar = () => {
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <Link to="/" className="text-black font-bold text-[25px]" style={{ fontFamily: 'cursive', /* other styles */ }}>
-                  FrameFusion
+              <Link to="/" className="text-black font-bold text-[25px]" style={{ fontFamily: 'cursive', /* other styles */ }}>
+                  <Name name="FrameFusion" size="32px" fontFamily="cursive"/>
                 </Link>
               </div>
 
@@ -33,7 +35,7 @@ const Navbar = () => {
 
                           <img className='rounded-full' src={picturePath} alt={name} style={{ marginRight: '5px', width: '30px', height: '30px' }} />
 
-                          {user.artistId}
+                          <Name name={user.artistId} size="17px"/>
                         </div>
                       </NavLink>
                     }
@@ -47,7 +49,7 @@ const Navbar = () => {
                           </div>
                         </NavLink>
                         <NavLink to="/orders" className="text-black hover:bg-indigo-200 px-3 py-2 rounded-md text-sm font-medium">
-                          My Orders
+                          <Name name="MyOrders" size="17px"/>
                         </NavLink>
                       </>
                     }
@@ -55,15 +57,15 @@ const Navbar = () => {
 
 
                     <NavLink to="/logout" className="text-black hover:bg-indigo-200 px-3 py-2 rounded-md text-sm font-medium">
-                      Logout
+                    <Name name="Logout" size="17px" className=" w-50"/>
                     </NavLink>
                     {actor === "artist" &&
                       <NavLink to="/addArt" className="text-black px-3 py-2 rounded-md text-sm font-medium">
-                        <div className="inline-flex items-center justify-center w-auto h-auto mr-2 text-indigo-100 transition-colors duration-150 bg-indigo-700 rounded-lg focus:shadow-outline hover:bg-indigo-800 p-2">
+                        <div className="inline-flex items-center justify-center w-auto h-auto mr-2  transition-colors duration-150 bg-slate-200 rounded-lg focus:shadow-outline hover:bg-slate-400 p-2">
                           <svg className="w-6 h-6 fill-current" viewBox="0 0 20 20">
                             <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" fillRule="evenodd"></path>
                           </svg>
-                          <span className="ml-2">Add New Art</span>
+                          <span className="ml-2"><Name name="Add New Art" size="17px"/></span>
                         </div>
 
                       </NavLink>
@@ -73,10 +75,10 @@ const Navbar = () => {
                 ) : (
                   <>
                     <NavLink to="/login" className={`text-black hover:bg-indigo-200 px-3 py-2 rounded-md text-sm font-medium `}>
-                      Login
+                    <Name name="Login" size="17px"/>
                     </NavLink>
                     <NavLink to="/register" className="text-black hover:bg-indigo-200 px-3 py-2 rounded-md text-sm font-medium">
-                      Register
+                    <Name name="Register" size="17px"/>
                     </NavLink>
                   </>
                 )}
