@@ -97,5 +97,5 @@ Installation:
 
 ## Demo Video
 
-[![FrameFusion Demo](https://youtu.be/rF6sY58Zqwg?feature=shared)]
+(https://youtu.be/rF6sY58Zqwg?feature=shared)
 
