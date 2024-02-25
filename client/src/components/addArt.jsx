@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Input from "./input";
+import { setArt } from "../store";
 
 const AddArt = () => {
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     description: "",
     category: "",
@@ -75,6 +78,7 @@ const AddArt = () => {
         artistId: userId,
       };
       console.log(data);
+      dispatch(setArt({ arts: data }));
 
       try {
         const response = await axios.post(

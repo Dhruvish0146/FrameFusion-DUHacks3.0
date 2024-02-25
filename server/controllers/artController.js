@@ -76,7 +76,6 @@ const deleteArt = async (req,res) => {
 }
 
 
-
 module.exports = {
     createArt,
     getArts,

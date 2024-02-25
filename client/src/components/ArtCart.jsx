@@ -20,9 +20,9 @@ const ArtCard = ({ price, title, artistId, imageUrl, isAvailable, _id }) => {
         <Link to={`/art/${_id}`} className="block">
           <h5 className="text-lg font-semibold text-gray-800 hover:text-indigo-500 line-clamp-2">{title}</h5>
         </Link>
-        <Link to={`/profile/artist/${artistId}`} className="text-gray-500 italic text-sm line-clamp-1">
+        {/* <Link to={`/profile/artist/${artistId}`} className="text-gray-500 italic text-sm line-clamp-1">
           {artistId}
-        </Link>
+        </Link> */}
         <div className="mt-2 flex justify-between items-center">
           <p className="text-lg font-bold text-gray-800">₹{price}</p>
           {/* Your rating icons */}

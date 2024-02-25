@@ -44,12 +44,17 @@ export const authSlice = createSlice({
         state.picturePath = state.user.picturePath;
     },
     setArts:(state,action) =>{
-      state.arts = action.payload.arts;
+      state.arts = { ...state.arts, ...action.payload };
 
+    },
+    setArt: (state, action) => {
+      state.arts = [...state.arts, action.payload]; // Append the new data to the existing arts array
     }
+    
+    
   },
 });
 
-export const { setLogin, setLogout, setPicturePath, updateDetails ,setArts} =
+export const { setLogin, setLogout, setPicturePath, updateDetails ,setArts,setArt} =
   authSlice.actions;
 export default authSlice.reducer;

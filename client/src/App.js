@@ -6,8 +6,8 @@ import Navbar from './components/navbar';
 import Logout from './components/logout';
 import ProfileArtist from './components/profileArtist';
 import AddArt from './components/addArt';
-import EditProfile from './components/editProfile';
-import Footer from './components/footer';
+// import EditProfile from './components/editProfile';
+// import Footer from './components/footer';
 
 import ProfileUser from './components/ProfileUser/profileUser';
 import ArtPage from './components/ArtPage/artPage';
@@ -16,7 +16,10 @@ import Orders from './components/OrdersPage/order';
 import EditProfileArtist from './components/ProfileArtist/profileArtist';
 
 
+
 function App() {
+
+
   return (
     <>
       <Navbar />

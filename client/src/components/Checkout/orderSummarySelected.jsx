@@ -17,7 +17,7 @@ const OrderSummarySelected = ({ art, changeSelected }) => {
                     <h3 className="text-xl font-bold mb-2">{art.title}</h3>
                     <p className="mb-2">{art.description}</p>
                     <p className="text-sm font-bold mb-2 overflow-auto">Artist: {art.artistId}</p>
-                    <p className="text-sm">Price: {art.price}</p>
+
                 </div>
             </div>
             <div className=" pb-4 flex justify-center">

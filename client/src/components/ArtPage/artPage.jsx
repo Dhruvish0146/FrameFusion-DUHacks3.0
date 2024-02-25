@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Image from "../Image";
 import { Link } from "react-router-dom";
 import Name from "../Name";
+
 
 const ArtPage = (props) => {
   const { artId } = useParams();
@@ -13,8 +14,26 @@ const ArtPage = (props) => {
   const [artist, setArtist] = useState(null);
   const actor = useSelector((state) => state.actor);
   const user = useSelector((state) => state.user);
-  const navigate = useNavigate();
+  const [arts, setArts] = useState([]);
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Fetch arts from the server
+    const fetchArts = async () => {
+      try {
+        const response = await fetch("http://localhost:5001/art/getArts"); // Replace with your API endpoint
+        const data = await response.json();
+        setArts(data);
+
+      } catch (error) {
+        console.error("Error fetching arts:", error);
+      }
+    };
+
+    fetchArts();
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -43,6 +62,32 @@ const ArtPage = (props) => {
     } else navigate(`/checkout/${artId}`);
   };
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:5001/art/${artId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        // Remove the deleted art from the arts array
+        const updatedArts = arts.filter((art) => art._id !== artId);
+
+        // Update the arts state in Redux store
+        dispatch(setArts({ arts: updatedArts }));
+
+        toast.success("Art deleted successfully");
+        navigate("/");
+        // Optionally, you can navigate to a different page or perform any other action upon successful deletion
+      } else {
+        throw new Error("Failed to delete art");
+      }
+    } catch (error) {
+      console.error("Error deleting art:", error);
+      toast.error("Failed to delete art");
+    }
+  };
+
+
   return (
     <>
       {art && artist && (
@@ -52,8 +97,9 @@ const ArtPage = (props) => {
               <div className="relative p-10 md:w-4/6">
                 <div className="flex flex-col md:flex-row">
                   <h2 className="mb-auto text-3xl font-bold">
-                    <Name name={art.title} size="25px" />
+                    <Name name={art.title} size="35px" /> {/* Increase the size to 35px */}
                   </h2>
+
                 </div>
                 <div className="mt-2 flex select flex-wrap items-center gap-1">
                   <Link
@@ -85,6 +131,40 @@ const ArtPage = (props) => {
                     {art.description}
                   </div>
                 </div>
+
+                {art.artistId === user._id &&
+                  (actor === true || actor === "artist") && (
+                    <div className="mt-5">
+                      {!art.isAvailable ? (
+                        <div className="text-red-500 font-bold">Out of Stock</div>
+                      ) : (
+                        <button
+                          onClick={handleDelete}
+                          className="bg-red-500 hover:bg-red-600 text-white py-2 pl-2 pr-3 rounded flex"
+                        >
+                          <div>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="1.5"
+                              stroke="white"
+                              className="w-6 h-6"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                              />
+                            </svg>
+                          </div>
+                          <p className="ml-2">Delete Art</p>
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+
                 {!actor && (
                   <>
                     <div className="mt-10 flex flex-col items-center justify-around space-y-4 border-t border-b py-4 sm:flex-row sm:space-y-0">
@@ -115,7 +195,9 @@ const ArtPage = (props) => {
                           Buy Now
                         </button>
                       ) : (
-                        <div className="text-red-500 font-bold">Out of Stock</div>
+                        <div className="text-red-500 font-bold">
+                          Out of Stock
+                        </div>
                       )}
                       <ToastContainer />
                     </div>
@@ -166,7 +248,7 @@ const ArtPage = (props) => {
                       <Image
                         art={art}
                         className="w-auto h-auto min-w-full min-h-full"
-                        // Adjust min-width and min-height as needed
+                      // Adjust min-width and min-height as needed
                       />
                     )}
                   </div>
